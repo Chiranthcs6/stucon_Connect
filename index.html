@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stucon </title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-stucon-50 to-stucon-100">
+    <header class="bg-white shadow-lg">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-3xl font-bold text-stucon-800">Stucon</h1>
+                    <span class="text-gray-600">Stucon</span>
+                </div>
+                <div id="nav-buttons" class="space-x-4">
+                    <!-- Navigation buttons will be populated by JavaScript -->
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Hero Section -->
+        <div class="text-center mb-16">
+            <h2 class="text-5xl font-bold text-gray-900 mb-6">
+                Welcome to Stucon
+            </h2>
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                Your comprehensive platform for accessing and sharing educational materials. 
+                Connect with faculty and students, explore course resources, and contribute to our growing knowledge base.
+            </p>
+            <div id="hero-actions" class="flex justify-center space-x-6">
+                <!-- Action buttons will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="grid md:grid-cols-3 gap-8 mb-16">
+            <div class="bg-white rounded-lg p-8 shadow-md">
+                <div class="w-12 h-12 bg-stucon-100 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-stucon-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Access Materials</h3>
+                <p class="text-gray-600">Browse and download educational resources organized by scheme, branch, and semester.</p>
+            </div>
+
+            <div class="bg-white rounded-lg p-8 shadow-md">
+                <div class="w-12 h-12 bg-stucon-100 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-stucon-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Share Knowledge</h3>
+                <p class="text-gray-600">Upload and contribute educational materials to help your fellow students and faculty.</p>
+            </div>
+
+            <div class="bg-white rounded-lg p-8 shadow-md">
+                <div class="w-12 h-12 bg-stucon-100 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-stucon-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Connect & Collaborate</h3>
+                <p class="text-gray-600">Join a community of learners and educators working together towards academic excellence.</p>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="grid md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-3xl font-bold text-stucon-600 mb-2">5+</div>
+                    <div class="text-gray-600">Branches</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-stucon-600 mb-2">100+</div>
+                    <div class="text-gray-600">Subjects</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-stucon-600 mb-2">500+</div>
+                    <div class="text-gray-600">Materials</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-stucon-600 mb-2">1000+</div>
+                    <div class="text-gray-600">Students</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-gray-400">&copy; 2024 Stucon - Stucon. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="src/js/cookieHelpers.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navButtons = document.getElementById('nav-buttons');
+            const heroActions = document.getElementById('hero-actions');
+            
+            const isLoggedIn = CookieHelpers.isLoggedIn();
+            
+            if (isLoggedIn) {
+                // Show Dashboard button for logged-in users
+                navButtons.innerHTML = `
+                    <a href="pages/main/mainPage.html" class="btn btn-primary">Go to Dashboard</a>
+                    <a href="about.html" class="btn btn-secondary">About</a>
+                `;
+                
+                heroActions.innerHTML = `
+                    <a href="pages/main/mainPage.html" class="btn btn-primary text-lg px-8 py-3">
+                        Go to Dashboard
+                    </a>
+                `;
+            } else {
+                // Show Login/Signup buttons for guest users
+                navButtons.innerHTML = `
+                    <a href="pages/login/loginPage.html" class="btn btn-primary">Login</a>
+                    <a href="pages/signup/signUp.html" class="btn btn-secondary">Sign Up</a>
+                    <a href="about.html" class="btn btn-secondary">About</a>
+                `;
+                
+                heroActions.innerHTML = `
+                    <a href="pages/login/loginPage.html" class="btn btn-primary text-lg px-8 py-3">
+                        Get Started
+                    </a>
+                    <a href="pages/signup/signUp.html" class="btn btn-secondary text-lg px-8 py-3">
+                        Sign Up
+                    </a>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

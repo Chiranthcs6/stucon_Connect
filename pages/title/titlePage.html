@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Details - Stucon</title>
+    <link rel="stylesheet" href="../../styles/style.css">
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <a href="../../index.html" class="text-2xl font-bold text-stucon-800">Stucon</a>
+                    <span class="text-gray-600">Stucon</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="../main/mainPage.html" class="btn btn-secondary">Back to Documents</a>
+                    <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-12">
+            <div class="text-gray-600">Loading document details...</div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="hidden text-center py-12">
+            <div class="text-red-600">Failed to load document details.</div>
+            <a href="../main/mainPage.html" class="btn btn-primary mt-4">Back to Documents</a>
+        </div>
+
+        <!-- Document Details -->
+        <div id="documentDetails" class="hidden bg-white rounded-lg shadow-lg overflow-hidden">
+            <!-- Document Header -->
+            <div class="bg-stucon-600 text-white px-6 py-8">
+                <h1 id="documentTitle" class="text-3xl font-bold mb-2"></h1>
+                <div id="documentMeta" class="text-stucon-100 space-y-1">
+                    <!-- Meta information will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Document Information -->
+            <div class="p-6">
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <!-- Left Column -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Document Information</h3>
+                        <dl class="space-y-3">
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">File Type</dt>
+                                <dd id="fileType" class="mt-1 text-sm text-gray-900"></dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Upload Date</dt>
+                                <dd id="uploadDate" class="mt-1 text-sm text-gray-900"></dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Publisher</dt>
+                                <dd id="publisher" class="mt-1 text-sm text-gray-900"></dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Downloads</dt>
+                                <dd id="downloads" class="mt-1 text-sm text-gray-900"></dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Academic Classification</h3>
+                        <dl class="space-y-3">
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Scheme</dt>
+                                <dd id="scheme" class="mt-1 text-sm text-gray-900"></dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Branch</dt>
+                                <dd id="branch" class="mt-1 text-sm text-gray-900"></dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Semester</dt>
+                                <dd id="semester" class="mt-1 text-sm text-gray-900"></dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Subject</dt>
+                                <dd id="subject" class="mt-1 text-sm text-gray-900"></dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                <!-- Preview Section -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Document Preview</h3>
+                    <div id="previewContainer" class="bg-gray-50 rounded-lg p-6 min-h-96 flex items-center justify-center">
+                        <!-- Preview content will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <div class="flex justify-between items-center">
+                        <a href="../main/mainPage.html" class="btn btn-secondary">
+                            Back to Documents
+                        </a>
+                        <div class="text-sm text-gray-500">
+                            Note: Download functionality requires backend integration
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../../src/js/cookieHelpers.js"></script>
+    <script src="titlePage.js"></script>
+</body>
+</html>
