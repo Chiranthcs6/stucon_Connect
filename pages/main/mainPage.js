@@ -1,5 +1,6 @@
 // Main dashboard page functionality
 document.addEventListener('DOMContentLoaded', async function() {
+ 
     // Check authentication
     if (!CookieHelpers.isLoggedIn()) {
         window.location.href = '../login/loginPage.html';

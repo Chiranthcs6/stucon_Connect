@@ -1,11 +1,12 @@
 // Upload page functionality - handles document upload with form validation
 document.addEventListener('DOMContentLoaded', async function() {
+  /*
     // Check authentication
     if (!CookieHelpers.isLoggedIn()) {
         window.location.href = '../login/loginPage.html';
         return;
     }
-
+*/
     // DOM elements
     const uploadForm = document.getElementById('uploadForm');
     const schemeSelect = document.getElementById('scheme');

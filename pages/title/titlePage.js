@@ -1,5 +1,6 @@
 // Title page functionality - displays document details and metadata
 document.addEventListener('DOMContentLoaded', async function() {
+    
     // Check authentication
     if (!CookieHelpers.isLoggedIn()) {
         window.location.href = '../login/loginPage.html';

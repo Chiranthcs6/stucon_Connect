@@ -89,13 +89,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Note: Replace with real backend authentication
-    const apiNote = document.createElement('div');
-    apiNote.className = 'mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600';
-    apiNote.innerHTML = `
-        <strong>Note:</strong> This frontend is ready for backend integration.<br>
-        API endpoint: PUT /api/user/login<br>
-        Payload: { email, password }
-    `;
-    loginForm.appendChild(apiNote);
 });
