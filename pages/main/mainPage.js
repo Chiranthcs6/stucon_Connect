@@ -107,9 +107,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             const response = await fetch('/api/explore/getbranch');
             const branchData = await response.json();
             const branches = branchData.branchArr;
-            console.log(branches);
             const branch = branches.find(b => b.branchName === branchName);
             if (!branch) return;
+            console.log(errors)
 
             const subjectResponse = await fetch(`/api/explore/getsub?branch-id=${branch.branchID}&sem=${sem}`);
             const subjectData = await subjectResponse.json();
