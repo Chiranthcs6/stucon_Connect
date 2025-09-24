@@ -113,8 +113,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             const subjectResponse = await fetch(`/api/explore/getsub?branch-id=${branch.branchID}&sem=${sem}`);
             const subjectData = await subjectResponse.json();
-            const subjects=subjectData.subjectArr;v
-            
+            const subjects=subjectData.subjectArr;
             console.log(subjects);
             subjectFilter.innerHTML = '<option value=\"\">All Subjects</option>';
             subjects.forEach(subject => {
