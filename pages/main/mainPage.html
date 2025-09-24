@@ -3,217 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Stucon | SJC Institute of Technology</title>
-    <meta name="description" content="Stucon document management dashboard - Browse and manage academic documents">
+    <title>Dashboard - Stucon</title>
+    <meta name="description" content="Stucon document management system - filter and browse academic documents by scheme, branch, semester and subject.">
     <link rel="stylesheet" href="../../styles/style.css">
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Navigation Header -->
-    <nav class="navbar px-6 lg:px-16 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex items-center justify-between h-16">
-            <!-- Back to Documents + Logo -->
-            <div class="flex items-center space-x-6">
-                <a href="../../index.html" class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
-                    ← Back to Documents
-                </a>
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-sm">S</span>
-                    </div>
-                    <span class="text-xl font-bold text-academic-900">Stucon</span>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-content">
+                <div class="nav-left">
+                    <a href="/" class="logo" data-testid="link-home">Stucon</a>
                 </div>
-            </div>
-
-            <!-- User Menu -->
-            <div class="flex items-center space-x-4">
-                <span id="username-display" class="text-gray-700">Loading...</span>
-                <button id="logout-btn" class="btn-outline text-sm" data-testid="button-logout">
-                    Logout
-                </button>
+                <div class="nav-right">
+                    <span id="userGreeting" class="user-greeting" data-testid="text-user-greeting">Hello, student@example.com</span>
+                    <button id="logoutBtn" class="btn btn-secondary" data-testid="button-logout">Logout</button>
+                    <button id="uploadBtn" class="btn btn-success" data-testid="button-upload">Upload</button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-6 lg:px-16 py-8">
-        <!-- Welcome Section -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-academic-900 mb-2">
-                Welcome to your Dashboard
-            </h1>
-            <p class="text-gray-600">
-                Browse and manage academic documents by filtering through schemes, branches, and subjects.
-            </p>
-        </div>
-
+    <main class="main-container">
         <!-- Filters Section -->
-        <div class="card mb-8">
-            <h2 class="text-xl font-semibold text-academic-900 mb-6">Filter Documents</h2>
-            
-            <div class="grid md:grid-cols-4 gap-6">
-                <div>
-                    <label for="scheme-select" class="block text-sm font-medium text-gray-700 mb-2">
-                        Scheme
-                    </label>
-                    <select id="scheme-select" class="input-field" data-testid="select-scheme">
-                        <option value="">Select Scheme</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="branch-select" class="block text-sm font-medium text-gray-700 mb-2">
-                        Branch
-                    </label>
-                    <select id="branch-select" class="input-field" data-testid="select-branch" disabled>
-                        <option value="">Select Branch</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="semester-select" class="block text-sm font-medium text-gray-700 mb-2">
-                        Semester
-                    </label>
-                    <select id="semester-select" class="input-field" data-testid="select-semester">
-                        <option value="">Select Semester</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="subject-select" class="block text-sm font-medium text-gray-700 mb-2">
-                        Subject
-                    </label>
-                    <select id="subject-select" class="input-field" data-testid="select-subject" disabled>
-                        <option value="">Select Subject</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
-                <div class="flex items-center space-x-4">
-                    <button id="clear-filters-btn" class="btn-secondary text-sm" data-testid="button-clear-filters">
-                        Clear Filters
-                    </button>
-                    <div id="filter-info" class="text-sm text-gray-600"></div>
-                </div>
-                <a href="../upload/uploadPage.html" class="btn-primary" data-testid="button-upload">
-                    Upload Document
-                </a>
-            </div>
-        </div>
-
-        <!-- Search Section -->
-        <div class="card mb-8">
-            <div class="flex items-center space-x-4">
-                <div class="flex-1">
-                    <input 
-                        type="text" 
-                        id="search-input" 
-                        placeholder="Search documents by title, author, or keywords..." 
-                        class="input-field"
-                        data-testid="input-search"
-                    >
-                </div>
-                <button id="search-btn" class="btn-primary" data-testid="button-search">
-                    Search
-                </button>
-            </div>
-        </div>
-
-        <!-- Documents Section -->
         <div class="card">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-academic-900">Available Documents</h2>
-                <div class="text-sm text-gray-600">
-                    <span id="document-count">0</span> documents found
+            <div class="card-content">
+                <h2 class="card-title">Filter Documents</h2>
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label for="schemeFilter" class="filter-label">Scheme</label>
+                        <select id="schemeFilter" class="filter-select" data-testid="select-scheme">
+                            <option value="">All Schemes</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="branchFilter" class="filter-label">Branch</label>
+                        <select id="branchFilter" class="filter-select" data-testid="select-branch">
+                            <option value="">All Branches</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="semFilter" class="filter-label">Semester</label>
+                        <select id="semFilter" class="filter-select" data-testid="select-semester">
+                            <option value="">All Semesters</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="subjectFilter" class="filter-label">Subject</label>
+                        <select id="subjectFilter" class="filter-select" disabled data-testid="select-subject">
+                            <option value="">Select Subject</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button id="clearFilters" class="btn btn-secondary" data-testid="button-clear-filters">Clear Filters</button>
+                    <div id="filterInfo" class="filter-info" data-testid="text-filter-info">No filters applied</div>
                 </div>
             </div>
+        </div>
 
+        <!-- Documents Grid -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Documents</h2>
+                <div id="documentCount" class="document-count" data-testid="text-document-count">Loading...</div>
+            </div>
+            
             <!-- Loading State -->
-            <div id="loading-state" class="text-center py-12">
-                <div class="animate-spin w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-                <p class="text-gray-600">Loading documents...</p>
+            <div id="loadingState" class="hidden state-container" data-testid="loading-state">
+                <div class="loading-text">Loading documents...</div>
             </div>
 
-            <!-- Empty State -->
-            <div id="empty-state" class="hidden text-center py-12">
-                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">No documents found</h3>
-                <p class="text-gray-600 mb-6">
-                    Try adjusting your filters or search terms to find what you're looking for.
-                </p>
-                <a href="../upload/uploadPage.html" class="btn-primary">
-                    Upload First Document
-                </a>
+            <!-- No Results State -->
+            <div id="noResultsState" class="hidden state-container" data-testid="no-results-state">
+                <div class="no-results-text">No documents found matching your filters.</div>
             </div>
 
-            <!-- Documents Table -->
-            <div id="documents-table" class="hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50 border-b border-gray-200">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Title</th>
-                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Subject</th>
-                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Branch</th>
-                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Semester</th>
-                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Publisher</th>
-                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="documents-tbody" class="divide-y divide-gray-200">
-                            <!-- Documents will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
+            <!-- Error State -->
+            <div id="errorState" class="hidden state-container" data-testid="error-state">
+                <div class="error-text">Failed to load documents. Please try again.</div>
+            </div>
 
-                <!-- Pagination -->
-                <div class="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
-                    <div class="text-sm text-gray-600">
-                        Showing <span id="page-info">1-10 of 50</span> results
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <button id="prev-page-btn" class="btn-secondary text-sm" disabled>Previous</button>
-                        <button id="next-page-btn" class="btn-secondary text-sm">Next</button>
-                    </div>
-                </div>
+            <!-- Documents Grid -->
+            <div id="documentsGrid" class="documents-grid" data-testid="documents-grid">
+                <!-- Documents will be populated by JavaScript -->
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Document Preview Modal -->
-    <div id="document-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
-            <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-academic-900" id="modal-title">Document Details</h3>
-                <button id="modal-close-btn" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            <div class="p-6" id="modal-content">
-                <!-- Modal content will be populated by JavaScript -->
-            </div>
-            <div class="flex items-center justify-end space-x-4 p-6 border-t border-gray-200">
-                <button id="modal-cancel-btn" class="btn-secondary">Close</button>
-                <button id="modal-view-btn" class="btn-primary">View Document</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="../../src/js/cookieHelpers.js"></script>
-    <script src="../../client/src/js/apiClient.js"></script>
     <script src="./mainPage.js"></script>
 </body>
 </html>
