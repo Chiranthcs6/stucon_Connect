@@ -59,12 +59,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function loadSchemes() {
         try {
             const response = await fetch('/api/explore/getscheme');
-            const schemes = await response.json();
+            const data = await response.json();
+            const schemes = data.strArr; // get the array from inside the object
+            console.log(schemes);
             schemeFilter.innerHTML = '<option value=\"\">All Schemes</option>';
             schemes.forEach(scheme => {
                 const option = document.createElement('option');
-                option.value = scheme.schemeName;
-                option.textContent = scheme.schemeName;
+                option.value = scheme;
+                option.textContent = scheme;
                 schemeFilter.appendChild(option);
             });
         } catch (error) {
@@ -76,11 +78,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function loadBranches() {
         try {
             const response = await fetch('/api/explore/getbranch');
-            const branches = await response.json();
+            const data = await response.json();
+            const branches = data.branchArr;
+            console.log(branches);
             branchFilter.innerHTML = '<option value=\"\">All Branches</option>';
             branches.forEach(branch => {
                 const option = document.createElement('option');
-                option.value = branch.branchName;
+                option.value = branch.branchID;
                 option.textContent = branch.branchName;
                 branchFilter.appendChild(option);
             });
@@ -101,12 +105,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             // Get branch ID from branch name
             const response = await fetch('/api/explore/getbranch');
-            const branches = await response.json();
+            const branchData = await response.json();
+            const branches = branchData.branchArr;
+            console.log(branches);
             const branch = branches.find(b => b.branchName === branchName);
             if (!branch) return;
 
             const subjectResponse = await fetch(`/api/explore/getsub?branch-id=${branch.branchID}&sem=${sem}`);
-            const subjects = await subjectResponse.json();
+            const subjectData = await subjectResponse.json();
+            const subjects=subjectData.subjectArr;v
+            
+            console.log(subjects);
             subjectFilter.innerHTML = '<option value=\"\">All Subjects</option>';
             subjects.forEach(subject => {
                 const option = document.createElement('option');
