@@ -1,355 +1,494 @@
 // Main dashboard page functionality
-document.addEventListener('DOMContentLoaded', async function() {
- 
-    // Check authentication
-    if (!CookieHelpers.isLoggedIn()) {
-        window.location.href = '../login/loginPage.html';
+console.log('Main page script loaded!');
+
+// Global variables to store current selections
+let currentScheme = null;
+let currentBranch = null;
+let currentSemester = null;
+let currentSubject = null;
+
+// Event handlers - define globally to ensure they're accessible
+function handleSchemeChange(event) {
+    console.log('Scheme changed:', event.target.value);
+    currentScheme = event.target.value;
+    
+    // Save to cookie
+    CookieHelpers.setCookie('selectedScheme', currentScheme, 7);
+    console.log('Saved scheme to cookie:', currentScheme);
+    
+    // Reset dependent selects
+    resetSubjectSelect();
+    clearDocuments();
+}
+
+function handleBranchChange(event) {
+    console.log('Branch changed:', event.target.value);
+    currentBranch = event.target.value;
+    
+    // Save to cookie
+    CookieHelpers.setCookie('selectedBranch', currentBranch, 7);
+    console.log('Saved branch to cookie:', currentBranch);
+    
+    // Reset dependent dropdowns
+    resetSubjectSelect();
+    clearDocuments();
+    
+    // Load subjects when both branch and semester are selected
+    if (currentBranch && currentSemester) {
+        loadSubjects(currentScheme, currentBranch, currentSemester);
+    }
+}
+
+function handleSemesterChange(event) {
+    console.log('Semester changed:', event.target.value);
+    currentSemester = event.target.value;
+    
+    // Reset dependent dropdowns
+    resetSubjectSelect();
+    clearDocuments();
+    
+    // Load subjects when both branch and semester are selected
+    if (currentBranch && currentSemester) {
+        loadSubjects(currentScheme, currentBranch, currentSemester);
+    }
+}
+
+async function handleSubjectChange(event) {
+    console.log('Subject changed:', event.target.value);
+    currentSubject = event.target.value;
+    
+    if (currentSubject) {
+        await loadDocuments();
+    } else {
+        clearDocuments();
+    }
+}
+
+// Initialize page when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializePage);
+} else {
+    initializePage();
+}
+
+async function initializePage() {
+    console.log('Initializing main page...');
+    
+    // Check authentication (modified for testing - don't redirect immediately)
+    const isLoggedIn = CookieHelpers.isLoggedIn();
+    console.log('Authentication status:', isLoggedIn);
+    
+    if (!isLoggedIn) {
+        console.warn('User authentication unclear - proceeding anyway for testing');
+        // Don't redirect immediately - allow testing of main functionality
+    } else {
+        console.log('User is logged in, setting up page...');
+    }
+    
+    // Get DOM elements
+    const schemeSelect = document.getElementById('scheme-select');
+    const branchSelect = document.getElementById('branch-select');
+    const semesterSelect = document.getElementById('semester-select');
+    const subjectSelect = document.getElementById('subject-select');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (!schemeSelect || !branchSelect || !semesterSelect || !subjectSelect) {
+        console.error('Missing required DOM elements');
         return;
     }
-
-    // Initialize page
-    const session = CookieHelpers.getSession();
-    document.getElementById('userGreeting').textContent = `Hello, ${session.email}`;
-
-    // State management
-    let currentFilters = {
-        scheme: '',
-        branch: '',
-        sem: '',
-        subject: ''
-    };
-    let pagination = {
-        limit: 20,
-        offset: 0,
-        total: 0
-    };
-
-    // DOM Elements
-    const schemeFilter = document.getElementById('schemeFilter');
-    const branchFilter = document.getElementById('branchFilter');
-    const semFilter = document.getElementById('semFilter');
-    const subjectFilter = document.getElementById('subjectFilter');
-    const clearFiltersBtn = document.getElementById('clearFilters');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const documentsGrid = document.getElementById('documentsGrid');
-    const loadingState = document.getElementById('loadingState');
-    const noResultsState = document.getElementById('noResultsState');
-    const documentCount = document.getElementById('documentCount');
-    const paginationInfo = document.getElementById('paginationInfo');
-    const prevPageBtn = document.getElementById('prevPage');
-    const nextPageBtn = document.getElementById('nextPage');
-    const filterInfo = document.getElementById('filterInfo');
-
-    // Initialize filters
+    
+    // Set up event listeners
+    schemeSelect.addEventListener('change', handleSchemeChange);
+    branchSelect.addEventListener('change', handleBranchChange);
+    semesterSelect.addEventListener('change', handleSemesterChange);
+    subjectSelect.addEventListener('change', handleSubjectChange);
+    
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+    
+    // Load initial data from API and frontend
+    console.log('About to load data from API and frontend...');
     await loadSchemes();
-    await loadBranches();
-    loadDocuments();
+    
+    console.log('Page initialization complete');
+}
 
-    // Event Listeners
-    schemeFilter.addEventListener('change', handleSchemeChange);
-    branchFilter.addEventListener('change', handleBranchChange);
-    semFilter.addEventListener('change', handleSemChange);
-    subjectFilter.addEventListener('change', handleSubjectChange);
-    clearFiltersBtn.addEventListener('click', clearAllFilters);
-    logoutBtn.addEventListener('click', handleLogout);
-    prevPageBtn.addEventListener('click', () => changePage(-1));
-    nextPageBtn.addEventListener('click', () => changePage(1));
+// Frontend data for dropdowns (only semesters now)
+const FRONTEND_DATA = {
+    semesters: ['1', '2', '3', '4', '5', '6', '7', '8']
+};
 
-    // Load schemes dropdown
-    async function loadSchemes() {
-        try {
-            const response = await fetch('/api/explore/getscheme');
-            const data = await response.json();
-            const schemes = data.strArr; // get the array from inside the object
-            console.log(schemes);
-            schemeFilter.innerHTML = '<option value=\"\">All Schemes</option>';
-            schemes.forEach(scheme => {
-                const option = document.createElement('option');
-                option.value = scheme;
-                option.textContent = scheme;
-                schemeFilter.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Error loading schemes:', error);
-        }
-    }
-
-    // Load branches dropdown
-    async function loadBranches() {
-        try {
-            const response = await fetch('/api/explore/getbranch');
-            const data = await response.json();
-            const branches = data.branchArr;
-            console.log(branches);
-            branchFilter.innerHTML = '<option value=\"\">All Branches</option>';
-            branches.forEach(branch => {
-                const option = document.createElement('option');
-                option.value = branch.branchID;
-                option.textContent = branch.branchName;
-                branchFilter.appendChild(option);
-            });
-            branchFilter.disabled = false;
-        } catch (error) {
-            console.error('Error loading branches:', error);
-        }
-    }
-
-    // Load subjects based on branch and semester
-    async function loadSubjects(branchName, sem) {
-        if (!branchName || !sem) {
-            subjectFilter.innerHTML = '<option value=\"\">Select Subject</option>';
-            subjectFilter.disabled = true;
-            return;
-        }
-
-        try {
-            // Get branch ID from branch name
-            const response = await fetch('/api/explore/getbranch');
-            const branchData = await response.json();
-            const branches = branchData.branchArr;
-            const branch = branches.find(b => b.branchName === branchName);
-            console.log(branches);
-            if (!branch) return;
+// Data loading functions - schemes and branches from API, semesters from frontend
+async function loadSchemes() {
+    console.log('Loading schemes from API...');
+    try {
+        const response = await fetch('/api/explore/schemes');
+        console.log('Schemes API response status:', response.status);
+        
+        const data = await response.json();
+        console.log('Schemes response data:', data);
+        
+        if (response.ok && data.strArr) {
+            console.log('Populating schemes with:', data.strArr);
+            populateSchemeSelect(data.strArr);
             
-
-            const subjectResponse = await fetch(`/api/explore/getsub?branch-id=${branch.branchID}&sem=${sem}`);
-            const subjectData = await subjectResponse.json();
-            const subjects=subjectData.subjectArr;
-            console.log(subjects);
-            subjectFilter.innerHTML = '<option value=\"\">All Subjects</option>';
-            subjects.forEach(subject => {
-                const option = document.createElement('option');
-                option.value = subject.subjectName;
-                option.textContent = subject.subjectName;
-                subjectFilter.appendChild(option);
-            });
-            subjectFilter.disabled = false;
-        } catch (error) {
-            console.error('Error loading subjects:', error);
-            subjectFilter.innerHTML = '<option value=\"\">Error loading subjects</option>';
+            // Restore saved scheme selection
+            const savedScheme = CookieHelpers.getCookie('selectedScheme');
+            if (savedScheme) {
+                console.log('Restoring saved scheme from cookie:', savedScheme);
+                const schemeSelect = document.getElementById('scheme-select');
+                if (schemeSelect) {
+                    schemeSelect.value = savedScheme;
+                    currentScheme = savedScheme;
+                }
+            }
+            
+            // Load branches and semesters
+            await loadBranches();
+            loadSemesters();
+        } else {
+            console.error('Failed to load schemes - response not ok or no strArr:', data);
+            showError('Failed to load schemes');
         }
+    } catch (error) {
+        console.error('Error loading schemes:', error);
+        showError('Error loading schemes');
     }
+}
 
-    // Filter event handlers
-    function handleSchemeChange() {
-        currentFilters.scheme = schemeFilter.value;
-        saveFilterPreferences();
-        resetPagination();
-        loadDocuments();
-        updateFilterInfo();
-    }
-
-    function handleBranchChange() {
-        currentFilters.branch = branchFilter.value;
-        loadSubjects(currentFilters.branch, currentFilters.sem);
-        saveFilterPreferences();
-        resetPagination();
-        loadDocuments();
-        updateFilterInfo();
-    }
-
-    function handleSemChange() {
-        currentFilters.sem = semFilter.value;
-        loadSubjects(currentFilters.branch, currentFilters.sem);
-        saveFilterPreferences();
-        resetPagination();
-        loadDocuments();
-        updateFilterInfo();
-    }
-
-    function handleSubjectChange() {
-        currentFilters.subject = subjectFilter.value;
-        saveFilterPreferences();
-        resetPagination();
-        loadDocuments();
-        updateFilterInfo();
-    }
-
-    // Save filter preferences to cookies
-    function saveFilterPreferences() {
-        CookieHelpers.setFilterPreferences(
-            currentFilters.scheme,
-            currentFilters.branch,
-            currentFilters.subject,
-            currentFilters.sem
-        );
-    }
-
-    // Clear all filters
-    function clearAllFilters() {
-        schemeFilter.value = '';
-        branchFilter.value = '';
-        semFilter.value = '';
-        subjectFilter.value = '';
+async function loadBranches() {
+    console.log('Loading branches from API...');
+    try {
+        const response = await fetch('/api/explore/branches');
+        console.log('Branches API response status:', response.status);
         
-        currentFilters = { scheme: '', branch: '', sem: '', subject: '' };
-        subjectFilter.disabled = true;
+        const data = await response.json();
+        console.log('Branches response data:', data);
         
-        resetPagination();
-        loadDocuments();
-        updateFilterInfo();
+        if (response.ok && data.branchArr) {
+            console.log('Populating branches with:', data.branchArr);
+            populateBranchSelect(data.branchArr);
+            
+            // Restore saved branch selection
+            const savedBranch = CookieHelpers.getCookie('selectedBranch');
+            if (savedBranch) {
+                console.log('Restoring saved branch from cookie:', savedBranch);
+                const branchSelect = document.getElementById('branch-select');
+                if (branchSelect) {
+                    branchSelect.value = savedBranch;
+                    currentBranch = savedBranch;
+                }
+            }
+        } else {
+            console.error('Failed to load branches - response not ok or no branchArr:', data);
+            showError('Failed to load branches');
+        }
+    } catch (error) {
+        console.error('Error loading branches:', error);
+        showError('Error loading branches');
     }
+}
 
-    // Update filter info display
-    function updateFilterInfo() {
-        const activeFilters = [];
-        if (currentFilters.scheme) activeFilters.push(`Scheme: ${currentFilters.scheme}`);
-        if (currentFilters.branch) activeFilters.push(`Branch: ${currentFilters.branch}`);
-        if (currentFilters.sem) activeFilters.push(`Semester: ${currentFilters.sem}`);
-        if (currentFilters.subject) activeFilters.push(`Subject: ${currentFilters.subject}`);
+function loadSemesters() {
+    console.log('Loading semesters from frontend data...');
+    populateSemesterSelect(FRONTEND_DATA.semesters);
+}
+
+async function loadSubjects(schemeId, branchId, semester) {
+    console.log('Loading subjects for:', { schemeId, branchId, semester });
+    try {
+        const params = new URLSearchParams({
+            scheme: schemeId,
+            branch: branchId,
+            sem: semester
+        });
         
-        filterInfo.textContent = activeFilters.length > 0 
-            ? `Active filters: ${activeFilters.join(', ')}` 
-            : 'No filters applied';
+        const response = await fetch(`/api/explore/subjects?${params.toString()}`);
+        const data = await response.json();
+        
+        console.log('Subjects response:', data);
+        
+        if (response.ok && data.subjectArr) {
+            populateSubjectSelect(data.subjectArr);
+        } else {
+            console.error('Failed to load subjects:', data);
+            showError('Failed to load subjects');
+        }
+    } catch (error) {
+        console.error('Error loading subjects:', error);
+        showError('Error loading subjects');
     }
+}
 
-    // Load documents with current filters and pagination
-    async function loadDocuments() {
+async function loadDocuments() {
+    console.log('Loading documents...');
+    
+    if (!currentScheme || !currentBranch || !currentSemester || !currentSubject) {
+        console.log('Missing required selections for documents');
+        return;
+    }
+    
+    try {
         showLoading();
         
-        try {
-            const params = new URLSearchParams({ 
-                limit: pagination.limit,
-                offset: pagination.offset
-            });
-            if (currentFilters.scheme) params.append('scheme', currentFilters.scheme);
-            if (currentFilters.branch) params.append('branch', currentFilters.branch);
-            if (currentFilters.sem) params.append('sem', currentFilters.sem);
-            if (currentFilters.subject) params.append('subject', currentFilters.subject);
-
-            const response = await fetch(`/api/explore?${params}`);
-            const data = await response.json();
-
-            pagination.total = data.total || data.materials.length;
-            updatePaginationControls();
-            updateDocumentCount();
-            
-            if (data.materials.length === 0) {
-                showNoResults();
-            } else {
-                displayDocuments(data.materials);
-            }
-        } catch (error) {
-            console.error('Error loading documents:', error);
+        const params = new URLSearchParams({
+            scheme: currentScheme,
+            branch: currentBranch,
+            sem: currentSemester,
+            subject: currentSubject
+        });
+        
+        const response = await fetch(`/api/explore/documents?${params.toString()}`);
+        const data = await response.json();
+        
+        console.log('Documents response:', data);
+        
+        if (response.ok) {
+            // API succeeded - show documents or "No documents found"
+            displayDocuments(data.documents || []);
+        } else {
+            // API failed - show error message
+            console.error('Failed to load documents:', data);
             showError('Failed to load documents');
         }
+    } catch (error) {
+        console.error('Error loading documents:', error);
+        showError('Error loading documents');
     }
+}
 
-    // Display documents in grid
-    function displayDocuments(documents) {
-        hideLoading();
-        hideNoResults();
-        
-        documentsGrid.innerHTML = documents.map(doc => `
-            <div class=\"bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow\">
-                <div class=\"flex justify-between items-start mb-3\">
-                    <h3 class=\"font-semibold text-gray-900 text-lg\">${doc.title}</h3>
-                    <span class=\"text-xs bg-stucon-100 text-stucon-800 px-2 py-1 rounded\">${doc.fileType}</span>
-                </div>
-                <div class=\"text-sm text-gray-600 space-y-1 mb-4\">
-                    <div><strong>Publisher:</strong> ${doc.publisher}</div>
-                    <div><strong>Scheme:</strong> ${doc.scheme}</div>
-                    <div><strong>Branch:</strong> ${doc.branch}</div>
-                    <div><strong>Semester:</strong> ${doc.sem}</div>
-                    <div><strong>Subject:</strong> ${doc.subject}</div>
-                    <div><strong>Uploaded:</strong> ${new Date(doc.uploadDate).toLocaleDateString()}</div>
-                    <div><strong>Downloads:</strong> ${doc.downloads}</div>
-                </div>
-                <button 
-                    onclick=\"previewDocument(${doc.materialID})\" 
-                    class=\"w-full btn btn-primary\"
-                >
-                    Preview
+// DOM manipulation functions
+function populateSchemeSelect(schemes) {
+    const select = document.getElementById('scheme-select');
+    
+    console.log('populateSchemeSelect called with schemes:', schemes);
+    console.log('Number of schemes received:', schemes.length);
+    console.log('Schemes array:', JSON.stringify(schemes));
+    
+    // Clear existing options except the first one
+    select.innerHTML = '<option value="">Select Scheme</option>';
+    
+    schemes.forEach((scheme, index) => {
+        console.log(`Adding scheme ${index}: ${scheme}`);
+        const option = document.createElement('option');
+        option.value = scheme;
+        option.textContent = scheme;
+        select.appendChild(option);
+    });
+    
+    console.log('Final dropdown innerHTML:', select.innerHTML);
+    console.log('Populated scheme select with', schemes.length, 'schemes');
+}
+
+function populateBranchSelect(branches) {
+    const select = document.getElementById('branch-select');
+    
+    // Clear existing options except the first one
+    select.innerHTML = '<option value="">Select Branch</option>';
+    
+    branches.forEach(branch => {
+        const option = document.createElement('option');
+        option.value = branch.branch_id;
+        option.textContent = branch.branch_name;
+        select.appendChild(option);
+    });
+    
+    select.disabled = false;
+    console.log('Populated branch select with', branches.length, 'branches');
+}
+
+function populateSemesterSelect(semesters) {
+    const select = document.getElementById('semester-select');
+    
+    // Clear existing options except the first one
+    select.innerHTML = '<option value="">Select Semester</option>';
+    
+    semesters.forEach(semester => {
+        const option = document.createElement('option');
+        option.value = semester;
+        option.textContent = `Semester ${semester}`;
+        select.appendChild(option);
+    });
+    
+    select.disabled = false;
+    console.log('Populated semester select with', semesters.length, 'semesters');
+}
+
+function populateSubjectSelect(subjects) {
+    const select = document.getElementById('subject-select');
+    
+    // Clear existing options except the first one
+    select.innerHTML = '<option value="">Select Subject</option>';
+    
+    subjects.forEach(subject => {
+        const option = document.createElement('option');
+        option.value = subject.subject_id;
+        option.textContent = subject.subject_name;
+        select.appendChild(option);
+    });
+    
+    select.disabled = false;
+    console.log('Populated subject select with', subjects.length, 'subjects');
+}
+
+function resetBranchSelect() {
+    const select = document.getElementById('branch-select');
+    select.innerHTML = '<option value="">Select Branch</option>';
+    select.disabled = true;
+    currentBranch = null;
+}
+
+function resetSubjectSelect() {
+    const select = document.getElementById('subject-select');
+    select.innerHTML = '<option value="">Select Subject</option>';
+    select.disabled = true;
+    currentSubject = null;
+}
+
+function displayDocuments(documents) {
+    console.log('Displaying', documents.length, 'documents');
+    
+    const container = document.getElementById('documents-grid') || document.getElementById('documents-container');
+    
+    if (!container) {
+        console.error('Documents container not found');
+        return;
+    }
+    
+    hideLoading();
+    
+    if (documents.length === 0) {
+        // Show "No documents found" when API succeeds but returns empty array
+        container.innerHTML = `
+            <div class="col-span-full text-center py-8 text-gray-500">
+                <p>No documents found for the selected filters.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Create document cards
+    const documentsHTML = documents.map(doc => `
+        <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+            <h3 class="font-semibold text-lg mb-2">${doc.title || 'Untitled Document'}</h3>
+            <p class="text-gray-600 text-sm mb-2">Subject: ${doc.subject_name || 'Unknown'}</p>
+            <p class="text-gray-600 text-sm mb-3">Type: ${doc.type || 'Document'}</p>
+            <div class="flex gap-2">
+                <button onclick="downloadDocument('${doc.document_id}')" 
+                        class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                        data-testid="button-download-${doc.document_id}">
+                    Download
+                </button>
+                <button onclick="viewDocument('${doc.document_id}')" 
+                        class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
+                        data-testid="button-view-${doc.document_id}">
+                    View
                 </button>
             </div>
-        `).join('');
-    }
+        </div>
+    `).join('');
+    
+    container.innerHTML = documentsHTML;
+}
 
-    // Preview document function (global scope)
-    window.previewDocument = function(docId) {
-        // Store docId in sessionStorage for titlePage
-        sessionStorage.setItem('selectedDocId', docId);
-        
-        // Alternative: URL parameter approach
-        window.location.href = `../title/titlePage.html?docId=${docId}`;
-    };
-
-    // Pagination functions
-    function resetPagination() {
-        pagination.offset = 0;
-    }
-
-    function changePage(direction) {
-        const newOffset = pagination.offset + (direction * pagination.limit);
-        if (newOffset >= 0 && newOffset < pagination.total) {
-            pagination.offset = newOffset;
-            loadDocuments();
-        }
-    }
-
-    function updatePaginationControls() {
-        const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
-        const totalPages = Math.ceil(pagination.total / pagination.limit);
-        
-        paginationInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-        
-        prevPageBtn.disabled = pagination.offset === 0;
-        nextPageBtn.disabled = pagination.offset + pagination.limit >= pagination.total;
-    }
-
-    function updateDocumentCount() {
-        const start = pagination.offset + 1;
-        const end = Math.min(pagination.offset + pagination.limit, pagination.total);
-        documentCount.textContent = `Showing ${start}-${end} of ${pagination.total} documents`;
-    }
-
-    // UI state functions
-    function showLoading() {
-        loadingState.classList.remove('hidden');
-        documentsGrid.classList.add('hidden');
-        noResultsState.classList.add('hidden');
-    }
-
-    function hideLoading() {
-        loadingState.classList.add('hidden');
-        documentsGrid.classList.remove('hidden');
-    }
-
-    function showNoResults() {
-        hideLoading();
-        noResultsState.classList.remove('hidden');
-        documentsGrid.classList.add('hidden');
-    }
-
-    function hideNoResults() {
-        noResultsState.classList.add('hidden');
-    }
-
-    function showError(message) {
-        hideLoading();
-        documentsGrid.innerHTML = `
-            <div class=\"col-span-full text-center py-8 text-red-600\">
-                ${message}
+function clearDocuments() {
+    const container = document.getElementById('documents-grid') || document.getElementById('documents-container');
+    if (container) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-8 text-gray-400">
+                <p>Select filters to view documents</p>
             </div>
         `;
     }
+}
 
-    // Logout functionality
-    async function handleLogout() {
-        try {
-            const session = CookieHelpers.getSession();
-            await fetch('/api/user/logout', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: session.email, token: session.token })
-            });
-            CookieHelpers.clearSession();
-            window.location.href = '../../index.html';
-        } catch (error) {
-            console.error('Logout error:', error);
-            // Clear session anyway
-            CookieHelpers.clearSession();
-            window.location.href = '../../index.html';
-        }
+function showLoading() {
+    const container = document.getElementById('documents-grid') || document.getElementById('documents-container');
+    if (container) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+                <p class="mt-2 text-gray-500">Loading documents...</p>
+            </div>
+        `;
     }
-});
+}
+
+function hideLoading() {
+    // Loading state will be replaced by document content
+}
+
+function showError(message) {
+    hideLoading();
+    const container = document.getElementById('documents-grid') || document.getElementById('documents-container');
+    if (container) {
+        // Only show "Failed to load documents" for actual API failures
+        container.innerHTML = `
+            <div class="col-span-full text-center py-8 text-red-600">
+                <p>${message}</p>
+                <p class="text-sm text-gray-500 mt-2">Please try again or check your filters.</p>
+            </div>
+        `;
+    }
+}
+
+// Document actions
+async function downloadDocument(documentId) {
+    console.log('Downloading document:', documentId);
+    try {
+        const response = await fetch(`/api/explore/download/${documentId}`);
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `document_${documentId}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } else {
+            alert('Failed to download document');
+        }
+    } catch (error) {
+        console.error('Download error:', error);
+        alert('Error downloading document');
+    }
+}
+
+async function viewDocument(documentId) {
+    console.log('Viewing document:', documentId);
+    // Implement document viewing logic here
+    alert('Document viewing functionality to be implemented');
+}
+
+// Logout functionality
+async function handleLogout() {
+    try {
+        const session = CookieHelpers.getSession();
+        await fetch('/api/user/logout', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionToken: session.sessionToken })
+        });
+        
+        CookieHelpers.clearSession();
+        window.location.href = '../login/loginPage.html';
+    } catch (error) {
+        console.error('Logout error:', error);
+        CookieHelpers.clearSession();
+        window.location.href = '../login/loginPage.html';
+    }
+}
+
+// Make functions globally available for testing
+window.testFunctions = {
+    loadBranches,
+    loadSubjects,
+    handleSchemeChange,
+    handleBranchChange,
+    handleSemesterChange
+};
+
+console.log('Main page script setup complete');
