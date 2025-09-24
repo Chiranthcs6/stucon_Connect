@@ -16,6 +16,21 @@ let documents = [];
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('Initializing document filter system...');
+    /*
+    // Wait for scripts to load, then check authentication
+    if (!window.AccessControl || !window.SessionManager) {
+        console.log('Authentication scripts not loaded, redirecting to login');
+        window.location.href = '../login/loginPage.html';
+        return;
+    }
+    
+    // Check authentication - redirect to login if not authenticated
+    if (!window.AccessControl.requireAuthentication()) {
+        return;
+    }
+    */
+    // Load user session and update greeting
+    loadUserSession();
     
     // Set up event listeners
     bindEventListeners();
@@ -27,6 +42,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     console.log('Document filter system initialized');
 });
+
+// Load user session and update greeting
+function loadUserSession() {
+    const username = window.SessionManager.getUsername();
+    const userGreeting = document.getElementById('userGreeting');
+    
+    if (username && userGreeting) {
+        userGreeting.textContent = `Hello, ${username}`;
+        console.log('User session loaded:', username);
+    } else {
+        console.log('Failed to load user session');
+        userGreeting.textContent = 'Hello, User';
+    }
+}
 
 // Bind all event listeners
 function bindEventListeners() {
@@ -399,6 +428,14 @@ function showError(message) {
 // Navigation handlers
 function handleLogout() {
     console.log('Logout clicked');
+    
+    // Clear session first
+    if (window.SessionManager) {
+        window.SessionManager.clearSession();
+        console.log('Session cleared');
+    }
+    
+    // Then redirect to login
     window.location.href = '../login/loginPage.html';
 }
 
