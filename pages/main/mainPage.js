@@ -16,7 +16,7 @@ let documents = [];
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('Initializing document filter system...');
-    /*
+    
     // Wait for scripts to load, then check authentication
     if (!window.AccessControl || !window.SessionManager) {
         console.log('Authentication scripts not loaded, redirecting to login');
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!window.AccessControl.requireAuthentication()) {
         return;
     }
-    */
+    
     // Load user session and update greeting
     loadUserSession();
     
