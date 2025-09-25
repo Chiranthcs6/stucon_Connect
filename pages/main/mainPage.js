@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             branchFilter.innerHTML = '<option value=\"\">All Branches</option>';
             branches.forEach(branch => {
                 const option = document.createElement('option');
-                option.value = branch.branchID;
+                option.value = branch.branchid;
                 option.textContent = branch.branchName;
                 branchFilter.appendChild(option);
             });
@@ -94,41 +94,40 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // Load subjects based on branch and semester
-    async function loadSubjects(branchName, sem) {
-        if (!branchName || !sem) {
-            subjectFilter.innerHTML = '<option value=\"\">Select Subject</option>';
-            subjectFilter.disabled = true;
-            return;
-        }
-
-        try {
-            // Get branch ID from branch name
-            const response = await fetch('/api/explore/getbranch');
-            const branchData = await response.json();
-            const branches = branchData.branchArr;
-            const branch = branches.find(b => b.branchName === branchName);
-            console.log(branches);
-            if (!branch) return;
-            
-
-            const subjectResponse = await fetch(`/api/explore/getsub?branch-id=${branch.branchID}&sem=${sem}`);
-            const subjectData = await subjectResponse.json();
-            const subjects=subjectData.subjectArr;
-            console.log(subjects);
-            subjectFilter.innerHTML = '<option value=\"\">All Subjects</option>';
-            subjects.forEach(subject => {
-                const option = document.createElement('option');
-                option.value = subject.subjectName; 
-                option.textContent = subject.subjectName;
-                subjectFilter.appendChild(option);
-            });
-            subjectFilter.disabled = false;
-        } catch (error) {
-            console.error('Error loading subjects:', error);
-            subjectFilter.innerHTML = '<option value=\"\">Error loading subjects</option>';
-        }
+async function loadSubjects(branchName, sem) {
+    if (!branchName || !sem) {
+        subjectFilter.innerHTML = '<option value="">Select Subject</option>';
+        subjectFilter.disabled = true;
+        return;
     }
+
+    try {
+        // Get branch ID from branch name
+        const response = await fetch('/api/explore/getbranch');
+        const branchData = await response.json();
+        const branches = branchData.branchArr;
+        const branch = branches.find(b => b.branchName === branchName);
+        
+        if (!branch) return;            
+
+        // Fix: Use correct parameter names and include scheme_id
+        const subjectResponse = await fetch(`/api/explore/getsub?scheme_id=${currentFilters.scheme}&branch_id=${branch.branchid}&sem=${sem}`);
+        const Data = await subjectResponse.json();
+        const subjects = Data.subjectArr;
+        
+        subjectFilter.innerHTML = '<option value="">All Subjects</option>';
+        subjects.forEach(subject => {
+            const option = document.createElement('option');
+            option.value = subject.subjectid; 
+            option.textContent = subject.subjectName;
+            subjectFilter.appendChild(option);
+        });
+        subjectFilter.disabled = false;
+    } catch (error) {
+        console.error('Error loading subjects:', error);
+        subjectFilter.innerHTML = '<option value="">Error loading subjects</option>';
+    }
+}
 
     // Filter event handlers
     function handleSchemeChange() {
@@ -202,38 +201,45 @@ document.addEventListener('DOMContentLoaded', async function() {
             ? `Active filters: ${activeFilters.join(', ')}` 
             : 'No filters applied';
     }
+//load documents with applied filters and pagination
+async function loadDocuments() {
+    showLoading();
+    
+    try {
+        const params = new URLSearchParams({ 
+            limit: pagination.limit,
+            offset: pagination.offset
+        });
+        if (currentFilters.scheme) params.append('scheme', currentFilters.scheme);
+        if (currentFilters.branch) params.append('branch', currentFilters.branch);
+        if (currentFilters.sem) params.append('sem', currentFilters.sem);
+        if (currentFilters.subject) params.append('subject', currentFilters.subject);
 
-    // Load documents with current filters and pagination
-    async function loadDocuments() {
-        showLoading();
+        const response = await fetch(`/api/explore?${params}`);
         
-        try {
-            const params = new URLSearchParams({ 
-                limit: pagination.limit,
-                offset: pagination.offset
-            });
-            if (currentFilters.scheme) params.append('scheme', currentFilters.scheme);
-            if (currentFilters.branch) params.append('branch', currentFilters.branch);
-            if (currentFilters.sem) params.append('sem', currentFilters.sem);
-            if (currentFilters.subject) params.append('subject', currentFilters.subject);
-
-            const response = await fetch(`/api/explore?${params}`);
-            const data = await response.json();
-
-            pagination.total = data.total || data.materials.length;
-            updatePaginationControls();
-            updateDocumentCount();
-            
-            if (data.materials.length === 0) {
-                showNoResults();
-            } else {
-                displayDocuments(data.materials);
-            }
-        } catch (error) {
-            console.error('Error loading documents:', error);
-            showError('Failed to load documents');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const data = await response.json();
+        
+        // Fix: Handle the actual API response structure
+        const materials = Array.isArray(data) ? data : [];
+        pagination.total = materials.length; // Since your API returns an array, not an object with total
+        
+        updatePaginationControls();
+        updateDocumentCount();
+        
+        if (materials.length === 0) {
+            showNoResults();
+        } else {
+            displayDocuments(materials);
+        }
+    } catch (error) {
+        console.error('Error loading documents:', error);
+        showError('Failed to load documents');
     }
+}
 
     // Display documents in grid
     function displayDocuments(documents) {
