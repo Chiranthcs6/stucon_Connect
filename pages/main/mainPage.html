@@ -15,9 +15,9 @@
                     <a href="../../index.html" class="text-2xl font-bold text-stucon-800">Stucon</a>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span id="userGreeting" class="text-gray-700 font-medium"></span>
-                    <button id="logoutBtn" class="btn btn-secondary">Logout</button>
-                    <a href="../upload/uploadPage.html" class="btn btn-success">Upload</a>
+                    <span id="userGreeting" class="text-gray-700 font-medium" data-testid="text-user-greeting"></span>
+                    <button id="logoutBtn" class="btn btn-secondary" data-testid="button-logout">Logout</button>
+                    <a href="../upload/uploadPage.html" class="btn btn-success" data-testid="link-upload">Upload</a>
                 </div>
             </div>
         </div>
@@ -32,7 +32,7 @@
                     <label for="schemeFilter" class="block text-sm font-medium text-gray-700 mb-2">
                         Scheme
                     </label>
-                    <select id="schemeFilter" class="form-select w-full">
+                    <select id="schemeFilter" class="form-select w-full" data-testid="select-scheme">
                         <option value="">All Schemes</option>
                     </select>
                 </div>
@@ -40,15 +40,15 @@
                     <label for="branchFilter" class="block text-sm font-medium text-gray-700 mb-2">
                         Branch
                     </label>
-                    <select id="branchFilter" class="form-select w-full" disabled>
-                        <option value="">Select Branch</option>
+                    <select id="branchFilter" class="form-select w-full" data-testid="select-branch">
+                        <option value="">All Branches</option>
                     </select>
                 </div>
                 <div>
                     <label for="semFilter" class="block text-sm font-medium text-gray-700 mb-2">
                         Semester
                     </label>
-                    <select id="semFilter" class="form-select w-full">
+                    <select id="semFilter" class="form-select w-full" data-testid="select-semester">
                         <option value="">All Semesters</option>
                         <option value="1">Semester 1</option>
                         <option value="2">Semester 2</option>
@@ -64,14 +64,14 @@
                     <label for="subjectFilter" class="block text-sm font-medium text-gray-700 mb-2">
                         Subject
                     </label>
-                    <select id="subjectFilter" class="form-select w-full" disabled>
+                    <select id="subjectFilter" class="form-select w-full" disabled data-testid="select-subject">
                         <option value="">Select Subject</option>
                     </select>
                 </div>
             </div>
             <div class="mt-4 flex justify-between items-center">
-                <button id="clearFilters" class="btn btn-secondary">Clear Filters</button>
-                <div id="filterInfo" class="text-sm text-gray-600"></div>
+                <button id="clearFilters" class="btn btn-secondary" data-testid="button-clear-filters">Clear Filters</button>
+                <div id="filterInfo" class="text-sm text-gray-600" data-testid="text-filter-info"></div>
             </div>
         </div>
 
@@ -79,7 +79,7 @@
         <div class="bg-white rounded-lg shadow">
             <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h2 class="text-xl font-semibold text-gray-900">Documents</h2>
-                <div id="documentCount" class="text-sm text-gray-600"></div>
+                <div id="documentCount" class="text-sm text-gray-600" data-testid="text-document-count"></div>
             </div>
             
             <!-- Loading State -->
@@ -93,17 +93,17 @@
             </div>
 
             <!-- Documents Grid -->
-            <div id="documentsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+            <div id="documentsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 p-6" data-testid="grid-documents">
                 <!-- Documents will be populated by JavaScript -->
             </div>
 
             <!-- Pagination -->
             <div class="px-6 py-4 border-t border-gray-200">
                 <div class="flex justify-between items-center">
-                    <div id="paginationInfo" class="text-sm text-gray-600"></div>
+                    <div id="paginationInfo" class="text-sm text-gray-600" data-testid="text-pagination-info"></div>
                     <div class="flex space-x-2">
-                        <button id="prevPage" class="btn btn-secondary" disabled>Previous</button>
-                        <button id="nextPage" class="btn btn-secondary" disabled>Next</button>
+                        <button id="prevPage" class="btn btn-secondary" disabled data-testid="button-prev-page">Previous</button>
+                        <button id="nextPage" class="btn btn-secondary" disabled data-testid="button-next-page">Next</button>
                     </div>
                 </div>
             </div>
@@ -115,7 +115,7 @@
         <div class="bg-white rounded-lg shadow-lg max-w-lg w-full mx-4">
             <div class="flex justify-between items-center p-6 border-b border-gray-200">
                 <h3 class="text-lg font-semibold">Document Preview</h3>
-                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700" data-testid="button-close-modal">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
